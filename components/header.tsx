@@ -53,7 +53,7 @@ export default function Header() {
 				<div className="flex flex-1 items-center justify-end space-x-2">
 					<Button variant="ghost" size="icon" aria-label="GitHub" asChild>
 						<Link
-							href="https://github.com/joshuakojko/flashcard-saas"
+							href="https://github.com/joshuakojko/flashcards"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
