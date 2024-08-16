@@ -102,7 +102,7 @@ export default function Home() {
         setIsLoading(false);
       }
     },
-    [notes]
+    [user]
   );
 
   const saveFlashcards = async () => {
@@ -227,9 +227,9 @@ export default function Home() {
                             flashcards.map((card, index) =>
                               index === currentCardIndex
                                 ? {
-                                    question: editingQuestion || card.question,
-                                    answer: editingAnswer || card.answer,
-                                  }
+                                  question: editingQuestion || card.question,
+                                  answer: editingAnswer || card.answer,
+                                }
                                 : card
                             )
                           );
@@ -253,9 +253,8 @@ export default function Home() {
                             onClick={() => setShowAnswer(!showAnswer)}
                           >
                             <CardHeader className="flex justify-center items-center pt-4">
-                              <CardTitle className="text-center">{`${
-                                index + 1
-                              }/${flashcards.length}`}</CardTitle>
+                              <CardTitle className="text-center">{`${index + 1
+                                }/${flashcards.length}`}</CardTitle>
                             </CardHeader>
                             <CardContent className="flex-grow flex items-center justify-center p-6 text-center">
                               <span className="text-lg md:text-xl lg:text-2xl font-semibold">
@@ -298,7 +297,7 @@ export default function Home() {
                 <DialogHeader>
                   <DialogTitle>Save Flashcard</DialogTitle>
                   <DialogDescription>
-                    Add your flashcard name. Click save when you're done.
+                    Add your flashcard name. Click save when you&apos;re done.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
