@@ -1,38 +1,39 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ClerkProvider } from "@clerk/nextjs";
-import Header from "@/components/header";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
+import { ClerkProvider } from '@clerk/nextjs';
+import Header from '@/components/header';
+import FirebaseAuth from '@/components/FirebaseAuth';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "AI Flashcards",
-  description: "Generated flashcards easily with AI",
+	title: 'AI Flashcards',
+	description: 'Generated flashcards easily with AI',
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ClerkProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-          >
-            <Header />
-            <main>
-              {children}
-            </main>
-          </ThemeProvider>
-        </ClerkProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body className={inter.className}>
+				<ClerkProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="dark"
+						enableSystem={false}
+					>
+						<Header />
+						<FirebaseAuth>
+							<main>{children}</main>
+						</FirebaseAuth>
+					</ThemeProvider>
+				</ClerkProvider>
+			</body>
+		</html>
+	);
 }
