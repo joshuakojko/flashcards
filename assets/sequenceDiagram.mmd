@@ -1,0 +1,34 @@
+sequenceDiagram
+    participant User
+    participant NextJS
+    participant Clerk
+    participant Firebase
+    participant OpenAI
+
+    User->>NextJS: Open application and request page
+    NextJS-->>User: Serve page
+    NextJS->>Clerk: Authenticate user
+    Clerk-->>NextJS: User authenticated
+
+    User->>NextJS: POST /api/generate with notes
+    NextJS->>OpenAI: Send notes for flashcard generation
+    OpenAI-->>NextJS: Return generated flashcards
+    NextJS-->>User: Return generated flashcards
+
+    User->>NextJS: Edit flashcard
+    NextJS-->>User: Display updated flashcard
+
+    User->>NextJS: Save flashcards
+    NextJS->>Firebase: Save flashcards
+    Firebase-->>NextJS: Confirm save
+    NextJS-->>User: Confirm save
+
+    User->>NextJS: GET /flashcards
+    NextJS->>Firebase: Fetch all flashcards
+    Firebase-->>NextJS: Return all flashcards
+    NextJS-->>User: Return and display all flashcards
+
+    User->>NextJS: Select individual flashcard
+    NextJS->>Firebase: Fetch individual flashcard
+    Firebase-->>NextJS: Return individual flashcard
+    NextJS-->>User: Return and display individual flashcard
