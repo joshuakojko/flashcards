@@ -109,7 +109,7 @@ export default function Home() {
 
   const showAlert = (message: string, variant: "default" | "destructive" = "default") => {
     setAlertMessage({ message, variant });
-    setTimeout(() => setAlertMessage(null), 2000); // Dismiss after 2 seconds
+    setTimeout(() => setAlertMessage(null), 2000);
   };
 
   const updateFlashcards = (newFlashcards: Flashcard[]) => {
