@@ -38,7 +38,10 @@ export default function FlashcardsPreview({ flashcards, updateFlashcards }: Flas
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "e" && !isOpen) {
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA');
+
+      if (event.key === "e" && !isOpen && !isInputFocused) {
         event.preventDefault();
         setIsOpen(true);
       }
