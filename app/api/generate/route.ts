@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { OpenAI } from "openai";
-import { zodResponseFormat } from "openai/helpers/zod";
-import { z } from "zod"
+import { getAuth } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { OpenAI } from 'openai';
+import { zodResponseFormat } from 'openai/helpers/zod';
+import { z } from 'zod';
 
 const systemPrompt = `You are an expert flashcard creator with a deep understanding of effective learning techniques. Your task is to generate high-quality, engaging flashcards based on the given topic or content. Each flashcard should consist of a thought-provoking question on one side and a concise, accurate answer on the other.
 
@@ -36,43 +37,54 @@ Before finalizing each flashcard, ask yourself:
 2. Is the answer clear, concise, and complete?
 3. Does this flashcard contribute to a comprehensive understanding of the topic?
 
-Your expertise in creating effective learning materials is crucial in helping users master the subject matter efficiently and thoroughly.`
+Your expertise in creating effective learning materials is crucial in helping users master the subject matter efficiently and thoroughly.`;
 
 const FlashcardSchema = z.object({
-    question: z.string(),
-    answer: z.string(),
+	question: z.string(),
+	answer: z.string(),
 });
 
 const FlashcardsSchema = z.object({
-    flashcards: z.array(FlashcardSchema),
+	flashcards: z.array(FlashcardSchema),
 });
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+	apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function POST(req: NextRequest) {
-    try {
-        const { notes } = await req.json();
-        if (!notes) {
-            return NextResponse.json({ error: "No notes provided" }, { status: 400 });
-        }
+export async function POST(req: NextRequest, res: NextResponse) {
+	const { userId } = getAuth(req);
+	if (!userId) {
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+	}
+	try {
+		const { notes } = await req.json();
+		if (!notes) {
+			return NextResponse.json({ error: 'No notes provided' }, { status: 400 });
+		}
 
-        const chatCompletion = await openai.beta.chat.completions.parse({
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: notes },
-            ],
-            model: "gpt-4o-2024-08-06",
-            response_format: zodResponseFormat(FlashcardsSchema, "flashcards"),
-        });
+		const chatCompletion = await openai.beta.chat.completions.parse({
+			messages: [
+				{ role: 'system', content: systemPrompt },
+				{ role: 'user', content: notes },
+			],
+			model: 'gpt-4o-2024-08-06',
+			response_format: zodResponseFormat(FlashcardsSchema, 'flashcards'),
+		});
 
-        const response = chatCompletion.choices[0].message;
-        if (response.refusal) {
-            return NextResponse.json({ error: "Request was refused" }, { status: 403 });
-        }
-        return NextResponse.json(response.parsed?.flashcards);
-    } catch (error) {
-        return NextResponse.json({ error: "Error generating flashcards " }, { status: 500 });
-    }
+		const response = chatCompletion.choices[0].message;
+		if (response.refusal) {
+			return NextResponse.json(
+				{ error: 'Request was refused' },
+				{ status: 403 }
+			);
+		}
+		return NextResponse.json(response.parsed?.flashcards);
+	} catch (error) {
+		console.error(error);
+		return NextResponse.json(
+			{ error: 'Error generating flashcards ' },
+			{ status: 500 }
+		);
+	}
 }
