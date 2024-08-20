@@ -22,6 +22,7 @@ import { doc, collection, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/firebase";
 import FlashcardsPreview from "@/components/FlashcardsPreview";
 import { Flashcard } from "@/lib/data/flashcard";
+import { Sparkles } from "lucide-react";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -32,12 +33,12 @@ export default function Home() {
   >([]);
   const [flashcardName, setFlashcardName] = useState<string>("");
   const { user } = useUser();
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertMessage, setAlertMessage] = useState<{ message: string; variant: "default" | "destructive" } | null>(null);
 
   const handleGenerateQuestions = useCallback(
     async (notes?: string) => {
       if (!user?.id) {
-        showAlert("Please sign in to generate flashcards.");
+        showAlert("Please sign in to generate flashcards.", "destructive");
         return;
       }
       setIsLoading(true);
@@ -68,7 +69,7 @@ export default function Home() {
 
   const saveFlashcards = async (updatedFlashcards: Flashcard[]) => {
     if (!flashcardName.trim()) {
-      showAlert("Please enter a name for your flashcard set.");
+      showAlert("Please enter a name for your flashcard set.", "destructive");
       return;
     }
 
@@ -97,18 +98,18 @@ export default function Home() {
 
       await batch.commit();
 
-      showAlert("Flashcards saved successfully!");
+      showAlert("Flashcards saved successfully!", "default");
       setFlashcardName("");
       setFlashcards([]);
     } catch (error) {
       console.error("Error saving flashcards:", error);
-      showAlert("An error occurred while saving flashcards. Please try again.");
+      showAlert("An error occurred while saving flashcards. Please try again.", "destructive");
     }
   };
 
-  const showAlert = (message: string) => {
-    setAlertMessage(message);
-    setTimeout(() => setAlertMessage(null), 2000); // Dismiss after 5 seconds
+  const showAlert = (message: string, variant: "default" | "destructive" = "default") => {
+    setAlertMessage({ message, variant });
+    setTimeout(() => setAlertMessage(null), 2000); // Dismiss after 2 seconds
   };
 
   const updateFlashcards = (newFlashcards: Flashcard[]) => {
@@ -148,7 +149,7 @@ export default function Home() {
               onClick={() => handleGenerateQuestions(notes)}
               disabled={isLoading}
             >
-              Generate Flashcards
+              <Sparkles className="mr-2" /> Generate Flashcards
             </Button>
           </CardContent>
         </Card>
@@ -189,10 +190,10 @@ export default function Home() {
         </>
       )}
       {alertMessage && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant={alertMessage.variant} className="mb-4">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{alertMessage}</AlertDescription>
+          <AlertTitle>{alertMessage.variant === "destructive" ? "Error" : "Notice"}</AlertTitle>
+          <AlertDescription>{alertMessage.message}</AlertDescription>
         </Alert>
       )}
     </div>
